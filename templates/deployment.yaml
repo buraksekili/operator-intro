@@ -1,0 +1,73 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: httpbin
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: httpbin
+#       version: v1
+#   template:
+#     metadata:
+#       labels:
+#         app: httpbin
+#         version: v1
+#     spec:
+#       containers:
+#         - image: docker.io/kennethreitz/httpbin
+#           imagePullPolicy: IfNotPresent
+#           name: httpbin
+#           ports:
+#             - containerPort: 80
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpbin-{{ include "operator-intro-env.fullname" . }}
+  labels:
+    {{- include "operator-intro-env.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "operator-intro-env.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "operator-intro-env.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "operator-intro-env.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: httpbin-{{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.image.containerPort }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
