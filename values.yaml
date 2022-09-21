@@ -6,12 +6,23 @@ image:
   tag: "latest"
   pullPolicy: IfNotPresent
   containerPort: 80
-  # Overrides the image tag whose default is the chart appVersion.
 
 service:
   type: ClusterIP
   port: 8000
   targetPort: 80
+
+apidef:
+  # metadata_name specifies the name of your k8s resource (.metadata.name).
+  metadata_name: httpbin-test-3
+  # name specifies your ApiDefinition name shown on the Dashboard.
+  name: my api definition - 3
+  use_keyless: true
+  active: true
+  proxy:
+    target_url: http://httpbin.default.svc:8000
+    listen_path: /httpbin
+    strip_listen_path: true
 
 imagePullSecrets: []
 nameOverride: ""

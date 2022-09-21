@@ -1,0 +1,23 @@
+apiVersion: tyk.tyk.io/v1alpha1
+kind: ApiDefinition
+metadata:
+  name: {{ .Values.apidef.metadata_name}}
+  annotations:
+    "helm.sh/resource-policy": keep
+  labels:
+    {{- include "operator-intro-env.labels" . | nindent 4 }}
+spec:
+  name: {{ .Values.apidef.name }}
+  use_keyless: {{ .Values.apidef.use_keyless }}
+  protocol: http
+  active: true
+  proxy:
+    target_url: {{ .Values.apidef.proxy.target_url }}
+    listen_path: {{ .Values.apidef.proxy.listen_path }}
+    strip_listen_path: {{ .Values.apidef.proxy.strip_listen_path}}
+  version_data:
+    default_version: Default
+    not_versioned: true
+    versions:
+      Default:
+        name: Default
