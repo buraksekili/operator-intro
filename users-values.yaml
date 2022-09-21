@@ -2,28 +2,26 @@
 replicaCount: 1
 
 image:
-  name: httpbin
-  repository: docker.io/kennethreitz/httpbin
+  name: users
+  repository: zalbiraw/go-api-test-service
   tag: "latest"
   pullPolicy: IfNotPresent
-  containerPort: 80
-  command: []
+  containerPort: 3101
+  command: ["./services/rest/users/server"]
 
 service:
   type: ClusterIP
-  port: 8000
-  targetPort: 80
+  port: 3101
+  targetPort: 3101
 
 apidef:
-  # metadata_name specifies the name of your k8s resource (.metadata.name).
-  metadata_name: httpbin-api
-  # name specifies your ApiDefinition name shown on the Dashboard.
-  name: my api definition - 3
+  metadata_name: users-api
+  name: my api definition - users
   use_keyless: true
   active: true
   proxy:
-    target_url: http://httpbin-svc.default.svc:8000
-    listen_path: /httpbin
+    target_url: http://users-svc.default.svc:3101
+    listen_path: /
     strip_listen_path: true
 
 imagePullSecrets: []

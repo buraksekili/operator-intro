@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: httpbin-{{ include "operator-intro-env.fullname" . }}
+  name: {{ .Values.image.name }}-{{ include "operator-intro-env.fullname" . }}
   labels:
     {{- include "operator-intro-env.labels" . | nindent 4 }}
 spec:
@@ -26,10 +26,14 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: httpbin-{{ .Chart.Name }}
+        - name: {{ .Values.image.name }}-{{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          {{- if .Values.image.command }}
+          command: 
+            {{- toYaml .Values.image.command | nindent 12 }}
+          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.image.containerPort }}

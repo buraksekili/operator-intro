@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: httpbin-svc-{{ include "operator-intro-env.fullname" . }}
+  name: {{ .Values.image.name }}-svc
   labels:
     {{- include "operator-intro-env.labels" . | nindent 4 }}
 spec:
